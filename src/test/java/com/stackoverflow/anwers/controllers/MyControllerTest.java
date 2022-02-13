@@ -1,9 +1,11 @@
 package com.stackoverflow.anwers.controllers;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import javax.transaction.Transactional;
+import java.util.stream.StreamSupport;
 import com.stackoverflow.answers.AnwersApplication;
+import com.stackoverflow.answers.repositories.NameRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,12 +19,16 @@ public class MyControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
+  @Autowired
+  private NameRepository nameRepository;
+
   @Test
-  @Transactional
   void trigger_validBody_savesName() throws Exception {
+    assertEquals(2, StreamSupport.stream(nameRepository.findAll().spliterator(), false).count());
+    
     mockMvc.perform(post("/triggerError")).andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk());
 
-    // assertEquals(3, StreamSupport.stream(nameRepository.findAll().spliterator(), false).count());
+    assertEquals(3, StreamSupport.stream(nameRepository.findAll().spliterator(), false).count());
   }
 }
